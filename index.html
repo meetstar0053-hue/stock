@@ -1,291 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Editable Cash Flow Report</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Table Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+        body {
+            background-color: #020617;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+            font-family: 'Inter', sans-serif;
+            color: #f8fafc;
+        }
 
-<style>
+        /* --- THE 1080x1080 CANVAS --- */
+        #capture-area {
+            width: 1080px;
+            height: 1080px;
+            background: #0f172a;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.1) 0%, transparent 40%);
+            display: flex;
+            flex-direction: column;
+            padding: 80px;
+            position: relative;
+            overflow: hidden;
+        }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter,sans-serif;
-}
+        /* --- HEADER --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 25px;
+            margin-bottom: 50px;
+            z-index: 1;
+        }
 
-body{
-background:#020617;
-color:white;
-padding:20px;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:20px;
-}
+        .brand-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 38px;
+            color: #38bdf8;
+            letter-spacing: 2px;
+        }
 
-.controls{
-width:100%;
-max-width:1000px;
-background:#1e293b;
-padding:20px;
-border-radius:20px;
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:15px;
-}
+        .date-display {
+            font-size: 34px;
+            font-weight: 700;
+            color: #94a3b8;
+        }
 
-input{
-padding:12px;
-font-size:18px;
-border-radius:10px;
-border:none;
-width:100%;
-}
+        /* --- TITLE --- */
+        .title-section {
+            text-align: center;
+            margin-bottom: 50px;
+            z-index: 1;
+        }
 
-button{
-padding:15px;
-font-size:18px;
-font-weight:bold;
-border:none;
-border-radius:10px;
-cursor:pointer;
-}
+        .title-section h1 {
+            font-size: 80px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: white;
+            text-transform: uppercase;
+        }
 
-.updateBtn{
-background:#10b981;
-color:white;
-}
+        /* --- PREMIUM TABLE --- */
+        .table-container {
+            z-index: 1;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-.downloadBtn{
-background:#38bdf8;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 32px;
+        }
 
-#capture-area{
-width:1080px;
-height:1080px;
-background:#0f172a;
-padding:80px;
-position:relative;
-}
+        th {
+            background: #1e293b;
+            color: #38bdf8;
+            text-align: left;
+            padding: 40px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
 
-.header{
-display:flex;
-justify-content:space-between;
-margin-bottom:50px;
-}
+        td {
+            padding: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-weight: 700;
+        }
 
-.brand-name{
-font-size:35px;
-font-family:Orbitron;
-color:#38bdf8;
-}
+        /* Icons inside table */
+        .name-cell {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 36px;
+            font-weight: 900;
+        }
 
-.date-display{
-font-size:30px;
-}
+        .icon-svg { width: 50px; height: 50px; }
+        .flag-icon { width: 55px; border-radius: 4px; }
 
-h1{
-text-align:center;
-font-size:70px;
-margin-bottom:50px;
-}
+        /* Values Alignment */
+        .val-cell { text-align: right; }
+        .unit-sub { font-size: 18px; color: #64748b; font-weight: 400; display: block; margin-top: 5px; }
 
-table{
-width:100%;
-border-collapse:collapse;
-font-size:30px;
-background:#1e293b;
-border-radius:20px;
-overflow:hidden;
-}
+        /* Colors */
+        .green { color: #10b981; }
+        .red { color: #f43f5e; }
 
-th,td{
-padding:35px;
-text-align:left;
-}
+        /* --- TOTAL NET ROW --- */
+        .total-row {
+            background: linear-gradient(90deg, #10b981, #059669);
+            color: white;
+        }
 
-th{
-background:#334155;
-}
+        .total-row td {
+            padding: 50px 40px;
+            font-size: 45px;
+            font-weight: 900;
+            border: none;
+        }
 
-.val{
-text-align:right;
-}
+        .big-val { font-size: 70px; }
 
-.green{
-color:#10b981;
-}
+        /* --- FOOTER --- */
+        .source-footer {
+            position: absolute;
+            bottom: 50px;
+            left: 80px;
+            right: 80px;
+            display: flex;
+            justify-content: space-between;
+            color: #475569;
+            font-size: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
 
-.red{
-color:#f43f5e;
-}
-
-.total{
-background:#059669;
-font-size:40px;
-font-weight:bold;
-}
-
-.footer{
-position:absolute;
-bottom:50px;
-left:80px;
-font-size:25px;
-color:gray;
-}
-
-</style>
+        /* --- BUTTON --- */
+        .controls { margin: 40px; }
+        #dl-btn {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 22px 60px;
+            font-size: 24px;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+        }
+    </style>
 </head>
-
 <body>
 
+    <div id="capture-area">
+        <header class="header">
+            <div class="brand-name">TRADING INVESTOR</div>
+            <div class="date-display">March 05, 2026</div>
+        </header>
+
+        <div class="title-section">
+            <h1>CASH FLOW REPORT</h1>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th class="val-cell">BUY <span class="unit-sub">(₹ Cr)</span></th>
+                        <th class="val-cell">SELL <span class="unit-sub">(₹ Cr)</span></th>
+                        <th class="val-cell">NET <span class="unit-sub">(₹ Cr)</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="name-cell">
+                            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            FII
+                        </td>
+                        <td class="val-cell" id="fiiBuyShow">14,914.99</td>
+                        <td class="val-cell" id="fiiSellShow">18,667.51</td>
+                        <td class="val-cell red" id="fiiNet">-3,752.52</td>
+                    </tr>
+                    <tr>
+                        <td class="name-cell">
+                            <svg class="flag-icon" viewBox="0 0 640 480">
+                                <path fill="#ff9933" d="M0 0h640v160H0z"/><path fill="#fff" d="M0 160h640v160H0z"/><path fill="#128807" d="M0 320h640v160H0z"/>
+                                <g transform="translate(320 240)"><circle r="70" fill="none" stroke="#000080" stroke-width="2"/><circle r="15" fill="#000080"/><path fill="#000080" d="M0-70V70M-70 0h140M-49.5-49.5l99 99M-49.5 49.5l99-99"/></g>
+                            </svg>
+                            DII
+                        </td>
+                        <td class="val-cell" id="diiBuyShow">18,821.10</td>
+                        <td class="val-cell" id="diiSellShow">13,667.73</td>
+                        <td class="val-cell green" id="diiNet">+5,153.37</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2">TOTAL MARKET NET</td>
+                        <td colspan="2" class="val-cell">
+                            <span class="big-val">₹ 1,400.85</span>
+                            <span style="font-size: 24px; opacity: 0.8;">Cr</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="source-footer">
+            <span>SOURCE: NSE & BSE INDIA</span>
+            <span></span>
+        </footer>
+    </div>
+
+    
+<style>
+.controls{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+margin:40px;
+}
+.controls input{
+padding:12px;
+border:none;
+border-radius:10px;
+font-size:16px;
+}
+</style>
+
 <div class="controls">
-
-<input id="dateInput" placeholder="Date" value="March 05, 2026">
-
-<input id="titleInput" placeholder="Title" value="CASH FLOW REPORT">
-
-<input id="fiiBuy" placeholder="FII Buy" value="14914.99">
-
-<input id="fiiSell" placeholder="FII Sell" value="18667.51">
-
-<input id="diiBuy" placeholder="DII Buy" value="18821.10">
-
-<input id="diiSell" placeholder="DII Sell" value="13667.73">
-
-<input id="totalInput" placeholder="Total Market Net" value="1400.85">
-
-<button class="updateBtn" onclick="updateData()">
-Update Table
-</button>
-
-<button class="downloadBtn" id="download">
-Download Image
-</button>
-
+<input id="fiiBuy" value="14914.99" placeholder="FII Buy">
+<input id="fiiSell" value="18667.51" placeholder="FII Sell">
+<input id="diiBuy" value="18821.10" placeholder="DII Buy">
+<input id="diiSell" value="13667.73" placeholder="DII Sell">
+<button onclick="updateData()">Update Data</button>
 </div>
+<div class="controls">
+        <button id="dl-btn">Download Table Image</button>
+    </div>
 
-
-<div id="capture-area">
-
-<div class="header">
-<div class="brand-name">TRADING INVESTOR</div>
-<div class="date-display" id="dateShow">
-March 05, 2026
-</div>
-</div>
-
-<h1 id="titleShow">
-CASH FLOW REPORT
-</h1>
-
-<table>
-
-<tr>
-<th>Name</th>
-<th class="val">Buy</th>
-<th class="val">Sell</th>
-<th class="val">Net</th>
-</tr>
-
-<tr>
-<td>FII</td>
-<td class="val" id="fiiBuyShow">14914.99</td>
-<td class="val" id="fiiSellShow">18667.51</td>
-<td class="val red" id="fiiNet">
--3752.52
-</td>
-</tr>
-
-<tr>
-<td>DII</td>
-<td class="val" id="diiBuyShow">18821.10</td>
-<td class="val" id="diiSellShow">13667.73</td>
-<td class="val green" id="diiNet">
-5153.37
-</td>
-</tr>
-
-<tr class="total">
-<td colspan="4">
-Total Market Net:
-₹ <span id="totalShow">1400.85</span> Cr
-</td>
-</tr>
-
-</table>
-
-<div class="footer">
-Source: NSE & BSE INDIA
-</div>
-
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
-
-<script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    <script>
+        
 function updateData(){
 
-let fiiBuy=parseFloat(document.getElementById("fiiBuy").value)
+let fiiBuy=parseFloat(document.getElementById("fiiBuy").value);
+let fiiSell=parseFloat(document.getElementById("fiiSell").value);
+let diiBuy=parseFloat(document.getElementById("diiBuy").value);
+let diiSell=parseFloat(document.getElementById("diiSell").value);
 
-let fiiSell=parseFloat(document.getElementById("fiiSell").value)
+document.getElementById("fiiBuyShow").innerText=fiiBuy.toLocaleString();
+document.getElementById("fiiSellShow").innerText=fiiSell.toLocaleString();
+document.getElementById("diiBuyShow").innerText=diiBuy.toLocaleString();
+document.getElementById("diiSellShow").innerText=diiSell.toLocaleString();
 
-let diiBuy=parseFloat(document.getElementById("diiBuy").value)
+let fiiNet=fiiBuy-fiiSell;
+let diiNet=diiBuy-diiSell;
 
-let diiSell=parseFloat(document.getElementById("diiSell").value)
-
-document.getElementById("dateShow").innerText=
-document.getElementById("dateInput").value
-
-document.getElementById("titleShow").innerText=
-document.getElementById("titleInput").value
-
-document.getElementById("fiiBuyShow").innerText=fiiBuy
-document.getElementById("fiiSellShow").innerText=fiiSell
-
-document.getElementById("diiBuyShow").innerText=diiBuy
-document.getElementById("diiSellShow").innerText=diiSell
-
-document.getElementById("fiiNet").innerText=
-(fiiBuy-fiiSell).toFixed(2)
-
-document.getElementById("diiNet").innerText=
-(diiBuy-diiSell).toFixed(2)
-
-document.getElementById("totalShow").innerText=
-document.getElementById("totalInput").value
-
+document.getElementById("fiiNet").innerText=fiiNet.toFixed(2);
+document.getElementById("diiNet").innerText=diiNet.toFixed(2);
 }
 
-document.getElementById("download")
-.addEventListener("click",()=>{
+document.getElementById('dl-btn').addEventListener('click', function () {
+            const node = document.getElementById('capture-area');
+            const btn = this;
+            btn.innerText = "Generating PNG...";
 
-htmlToImage.toPng(
-document.getElementById("capture-area"),
-{
-quality:1,
-pixelRatio:2
-}
-)
-.then(function(dataUrl){
-
-let link=document.createElement("a")
-
-link.download="report.png"
-
-link.href=dataUrl
-
-link.click()
-
-})
-
-})
-
-</script>
-
+            htmlToImage.toPng(node, {
+                quality: 1,
+                pixelRatio: 2, 
+                cacheBust: true
+            })
+            .then(function (dataUrl) {
+                const link = document.createElement('a');
+                link.download = `Market_Table_${Date.now()}.png`;
+                link.href = dataUrl;
+                link.click();
+                btn.innerText = "Download Table Image";
+            })
+            .catch(function (error) {
+                console.error(error);
+                btn.innerText = "Error! Try Again";
+            });
+        });
+    </script>
 </body>
 </html>
