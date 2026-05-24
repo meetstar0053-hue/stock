@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editable Cash Flow Report</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,sans-serif;
+}
+
+body{
+background:#020617;
+color:white;
+padding:20px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:20px;
+}
+
+.controls{
+width:100%;
+max-width:1000px;
+background:#1e293b;
+padding:20px;
+border-radius:20px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+}
+
+input{
+padding:12px;
+font-size:18px;
+border-radius:10px;
+border:none;
+width:100%;
+}
+
+button{
+padding:15px;
+font-size:18px;
+font-weight:bold;
+border:none;
+border-radius:10px;
+cursor:pointer;
+}
+
+.updateBtn{
+background:#10b981;
+color:white;
+}
+
+.downloadBtn{
+background:#38bdf8;
+}
+
+#capture-area{
+width:1080px;
+height:1080px;
+background:#0f172a;
+padding:80px;
+position:relative;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+margin-bottom:50px;
+}
+
+.brand-name{
+font-size:35px;
+font-family:Orbitron;
+color:#38bdf8;
+}
+
+.date-display{
+font-size:30px;
+}
+
+h1{
+text-align:center;
+font-size:70px;
+margin-bottom:50px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:30px;
+background:#1e293b;
+border-radius:20px;
+overflow:hidden;
+}
+
+th,td{
+padding:35px;
+text-align:left;
+}
+
+th{
+background:#334155;
+}
+
+.val{
+text-align:right;
+}
+
+.green{
+color:#10b981;
+}
+
+.red{
+color:#f43f5e;
+}
+
+.total{
+background:#059669;
+font-size:40px;
+font-weight:bold;
+}
+
+.footer{
+position:absolute;
+bottom:50px;
+left:80px;
+font-size:25px;
+color:gray;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="controls">
+
+<input id="dateInput" placeholder="Date" value="March 05, 2026">
+
+<input id="titleInput" placeholder="Title" value="CASH FLOW REPORT">
+
+<input id="fiiBuy" placeholder="FII Buy" value="14914.99">
+
+<input id="fiiSell" placeholder="FII Sell" value="18667.51">
+
+<input id="diiBuy" placeholder="DII Buy" value="18821.10">
+
+<input id="diiSell" placeholder="DII Sell" value="13667.73">
+
+<input id="totalInput" placeholder="Total Market Net" value="1400.85">
+
+<button class="updateBtn" onclick="updateData()">
+Update Table
+</button>
+
+<button class="downloadBtn" id="download">
+Download Image
+</button>
+
+</div>
+
+
+<div id="capture-area">
+
+<div class="header">
+<div class="brand-name">TRADING INVESTOR</div>
+<div class="date-display" id="dateShow">
+March 05, 2026
+</div>
+</div>
+
+<h1 id="titleShow">
+CASH FLOW REPORT
+</h1>
+
+<table>
+
+<tr>
+<th>Name</th>
+<th class="val">Buy</th>
+<th class="val">Sell</th>
+<th class="val">Net</th>
+</tr>
+
+<tr>
+<td>FII</td>
+<td class="val" id="fiiBuyShow">14914.99</td>
+<td class="val" id="fiiSellShow">18667.51</td>
+<td class="val red" id="fiiNet">
+-3752.52
+</td>
+</tr>
+
+<tr>
+<td>DII</td>
+<td class="val" id="diiBuyShow">18821.10</td>
+<td class="val" id="diiSellShow">13667.73</td>
+<td class="val green" id="diiNet">
+5153.37
+</td>
+</tr>
+
+<tr class="total">
+<td colspan="4">
+Total Market Net:
+₹ <span id="totalShow">1400.85</span> Cr
+</td>
+</tr>
+
+</table>
+
+<div class="footer">
+Source: NSE & BSE INDIA
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+
+<script>
+
+function updateData(){
+
+let fiiBuy=parseFloat(document.getElementById("fiiBuy").value)
+
+let fiiSell=parseFloat(document.getElementById("fiiSell").value)
+
+let diiBuy=parseFloat(document.getElementById("diiBuy").value)
+
+let diiSell=parseFloat(document.getElementById("diiSell").value)
+
+document.getElementById("dateShow").innerText=
+document.getElementById("dateInput").value
+
+document.getElementById("titleShow").innerText=
+document.getElementById("titleInput").value
+
+document.getElementById("fiiBuyShow").innerText=fiiBuy
+document.getElementById("fiiSellShow").innerText=fiiSell
+
+document.getElementById("diiBuyShow").innerText=diiBuy
+document.getElementById("diiSellShow").innerText=diiSell
+
+document.getElementById("fiiNet").innerText=
+(fiiBuy-fiiSell).toFixed(2)
+
+document.getElementById("diiNet").innerText=
+(diiBuy-diiSell).toFixed(2)
+
+document.getElementById("totalShow").innerText=
+document.getElementById("totalInput").value
+
+}
+
+document.getElementById("download")
+.addEventListener("click",()=>{
+
+htmlToImage.toPng(
+document.getElementById("capture-area"),
+{
+quality:1,
+pixelRatio:2
+}
+)
+.then(function(dataUrl){
+
+let link=document.createElement("a")
+
+link.download="report.png"
+
+link.href=dataUrl
+
+link.click()
+
+})
+
+})
+
+</script>
+
+</body>
+</html>
