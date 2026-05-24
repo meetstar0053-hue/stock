@@ -178,7 +178,7 @@
     <div id="capture-area">
         <header class="header">
             <div class="brand-name">TRADING INVESTOR</div>
-            <div class="date-display">March 05, 2026</div>
+            <div class="date-display" id="dateShow">March 05, 2026</div>
         </header>
 
         <div class="title-section">
@@ -256,6 +256,7 @@ font-size:16px;
 <input id="fiiSell" value="18667.51" placeholder="FII Sell">
 <input id="diiBuy" value="18821.10" placeholder="DII Buy">
 <input id="diiSell" value="13667.73" placeholder="DII Sell">
+<input id="dateInput" value="March 05, 2026" placeholder="Date">
 <button onclick="updateData()">Update Data</button>
 </div>
 <div class="controls">
@@ -271,6 +272,7 @@ let fiiBuy=parseFloat(document.getElementById("fiiBuy").value);
 let fiiSell=parseFloat(document.getElementById("fiiSell").value);
 let diiBuy=parseFloat(document.getElementById("diiBuy").value);
 let diiSell=parseFloat(document.getElementById("diiSell").value);
+document.getElementById("dateShow").innerText=document.getElementById("dateInput").value;
 
 document.getElementById("fiiBuyShow").innerText=fiiBuy.toLocaleString();
 document.getElementById("fiiSellShow").innerText=fiiSell.toLocaleString();
